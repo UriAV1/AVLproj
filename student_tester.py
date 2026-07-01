@@ -6,7 +6,6 @@
     3.  Your grade will be printed at the end.
         Only failed tests will be printed.
     hi bar do you see that?
-    poop
 '''
 
 import unittest
