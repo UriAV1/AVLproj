@@ -1,12 +1,14 @@
-# id1:
-# name1:
-# username1:
-# id2:
-# name2:
-# username2:
+# id1: 218821718
+# name1: Uri Aviram
+# username1: uriaviram
+# id2: 334758984
+# name2: Bar Nahari
+# username2: barnahari
 
 
 """A class representing a node in an AVL tree"""
+
+#bar do you see that
 
 
 class AVLNode(object):
