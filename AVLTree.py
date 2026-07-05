@@ -178,7 +178,68 @@ class AVLTree(object):
     """
 
     def delete(self, node):
-        return
+        if not node.is_real:
+            return
+
+        if not node.left.is_real and not node.right.is_real:
+            if node == self.root:
+                self.root = self.fakeNode
+            elif node == node.parent.left:
+                node.parent.left = self.fakeNode
+            else:
+                node.parent.right = self.fakeNode
+            self.Size -= 1
+            return
+
+        elif not node.left.is_real or not node.right.is_real:
+            child = node.left if node.left.is_real else node.right
+            if node == self.root:
+                self.root = child
+                child.parent = self.fakeNode
+            elif node == node.parent.left:
+                node.parent.left = child
+                child.parent = node.parent
+            else:
+                node.parent.right = child
+                child.parent = node.parent
+            self.Size -= 1
+            return
+        else:
+            successor = node.right
+            while successor.left.is_real:
+                successor = successor.left
+
+            node.key, successor.key = successor.key, node.key
+            node.value, successor.value = successor.value, node.value
+
+            self.delete(successor)
+
+
+        while node is not self.root:
+            node = node.parent
+            old_height = node.height
+            node.height = 1 + max(node.left.height, node.right.height)
+            old_bf = node.bf
+            node.bf = node.left.height - node.right.height
+            if node.bf == old_bf:
+                break
+            if self.is_avl and abs(node.bf) > 1:
+                if node.bf == 2:
+                    if node.left.bf == -1:
+                        self.rotate_left(node.left)
+                    self.rotate_right(node)
+                else:
+                    if node.right.bf == 1:
+                        self.rotate_right(node.right)
+                    self.rotate_left(node)
+
+
+
+
+
+
+
+
 
     """returns a list representing dictionary 
 
@@ -187,7 +248,12 @@ class AVLTree(object):
     """
 
     def avl_to_list(self):
-        return None
+        def avl_to_list_rec(node):
+            if not node.is_real:
+                return []
+            return avl_to_list_rec(node.left) + [(node.key, node.value)] + avl_to_list_rec(node.right)
+        return avl_to_list_rec(self.root)
+
 
     """returns the number of items in dictionary 
 
