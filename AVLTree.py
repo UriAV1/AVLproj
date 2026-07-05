@@ -37,7 +37,7 @@ class AVLNode(object):
     """
 
     def is_real_node(self):
-        return False
+        return self.is_real
 
 
 """
@@ -53,7 +53,7 @@ class AVLTree(object):
     @param is_avl: If True then tree is AVL, otherwise it is just a "regular" binary search tree, without rotations.
     """
 
-    def __init__(self, is_avl):
+    def __init__(self, is_avl= True):
         self.fakeNode = AVLNode(None, None, False)
         self.root = self.fakeNode
         self.root.parent = self.fakeNode
@@ -134,36 +134,31 @@ class AVLTree(object):
         self.Size += 1
 
         node = new_node
-        while node is not self.root:
-            node = node.parent
-            old_height = node.height
-            node.height = 1 + max(node.left.height, node.right.height)
-            old_bf = node.bf
-            node.bf = node.left.height - node.right.height
-            # if node.bf == old_bf:
-            #     break
-            if self.is_avl and abs(node.bf) < 2:
-                if node.height != old_height:
-                    height_changes += 1
+
+        if self.is_avl:
+            while node is not self.root:
+                node = node.parent
+                old_height = node.height
+                node.height = 1 + max(node.left.height, node.right.height)
+                node.bf = node.left.height - node.right.height
+                if abs(node.bf) < 2:
+                    if node.height != old_height:
+                        height_changes += 1
+                    else:
+                        break
                 else:
-                    break
-            else:
-                if node.bf == 2:
-                    if node.left.bf == -1:
-                        self.rotate_left(node.left)
+                    if node.bf == 2:
+                        if node.left.bf == -1:
+                            self.rotate_left(node.left)
+                            rotations += 1
+                        self.rotate_right(node)
                         rotations += 1
-                    self.rotate_right(node)
-                    rotations += 1
-                else:
-                    if node.right.bf == 1:
-                        self.rotate_right(node.right)
+                    else:
+                        if node.right.bf == 1:
+                            self.rotate_right(node.right)
+                            rotations += 1
+                        self.rotate_left(node)
                         rotations += 1
-                    self.rotate_left(node)
-                    rotations += 1
-
-
-
-
 
         return new_node, search_time, rotations, height_changes
 
@@ -224,7 +219,6 @@ class AVLTree(object):
 
         while node is not self.root:
             node = node.parent
-            old_height = node.height
             node.height = 1 + max(node.left.height, node.right.height)
             old_bf = node.bf
             node.bf = node.left.height - node.right.height
