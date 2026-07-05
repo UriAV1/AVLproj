@@ -26,7 +26,8 @@ class AVLNode(object):
         self.left = None
         self.right = None
         self.parent = None
-        self.height = -1
+        self.height = 0
+        self.bf = 0
         self.is_real = is_real
 
     """returns whether self is not a virtual node 
@@ -55,7 +56,8 @@ class AVLTree(object):
     def __init__(self, is_avl):
         self.fakeNode = AVLNode(None, None, False)
         self.root = self.fakeNode
-        self.size = 0
+        self.root.parent = self.fakeNode
+        self.Size = 0
         self.is_avl = is_avl
 
     """searches for a node in the dictionary corresponding to the key (starting at the root)
@@ -80,7 +82,7 @@ class AVLTree(object):
             else:
                 node = node.right
             search_time += 1
-        return None, search_time+1
+        return None, search_time
 
     """inserts a new node into the dictionary with corresponding key and value (starting at the root)
 
@@ -95,7 +97,79 @@ class AVLTree(object):
     """
 
     def insert(self, key, val):
-        return None, -1, -1, -1
+        search_time = 1
+        rotations = 0
+        height_changes = 0
+        new_node = None
+        if not self.root.is_real:
+            self.root = AVLNode(key, val)
+            self.root.left = self.fakeNode
+            self.root.right = self.fakeNode
+            self.Size += 1
+            return self.root, search_time, rotations, height_changes
+
+
+        node = self.root
+        while True:
+            if key < node.key:
+                if not node.left.is_real:
+                    new_node = AVLNode(key, val)
+                    node.left = new_node
+                    break
+                else:
+                    node = node.left
+            else:
+                if not node.right.is_real:
+                    new_node = AVLNode(key, val)
+                    node.right = new_node
+                    break
+                else:
+                    node = node.right
+            search_time += 1
+
+        new_node.left = self.fakeNode
+        new_node.right = self.fakeNode
+        new_node.parent = node
+        self.Size += 1
+
+        node = new_node
+        while node is not self.root:
+            node = node.parent
+            old_height = node.height
+            node.height = 1 + max(node.left.height, node.right.height)
+            old_bf = node.bf
+            node.bf = node.left.height - node.right.height
+            if node.bf == old_bf:
+                break
+            if self.is_avl and abs(node.bf) > 1:
+                rotations += 1
+                if node.bf == 2:
+                    if node.left.bf == -1:
+                        self.rotate_left(node.left)
+                        rotations += 1
+                    self.rotate_right(node)
+                else:
+                    if node.right.bf == 1:
+                        self.rotate_right(node.right)
+                        rotations += 1
+                    self.rotate_left(node)
+            else:
+                if node.height != old_height:
+                    height_changes += 1
+
+
+        return new_node, search_time, rotations, height_changes
+
+
+
+
+
+
+
+
+
+
+
 
     """deletes node from the dictionary
 
@@ -122,7 +196,7 @@ class AVLTree(object):
     """
 
     def size(self):
-        return -1
+        return self.Size
 
     """returns the root of the tree representing the dictionary
 
@@ -131,7 +205,7 @@ class AVLTree(object):
     """
 
     def get_root(self):
-        return None
+        return self.root
 
     """returns the height of the tree
 
@@ -140,4 +214,48 @@ class AVLTree(object):
         """
 
     def get_height(self):
-        return -1
+        return self.root.height if self.root.is_real else -1
+
+
+
+
+    def rotate_right(self, node):
+        new_root = node.left
+        node.left = new_root.right
+        new_root.right.parent = node
+        new_root.parent = node.parent
+        if not node.parent.is_real:
+            self.root = new_root
+        elif node == node.parent.right:
+            node.parent.right = new_root
+        else:
+            node.parent.left = new_root
+        new_root.right = node
+        node.parent = new_root
+
+        # Update heights and balance factors
+        node.height = 1 + max(node.left.height, node.right.height)
+        new_root.height = 1 + max(new_root.left.height, new_root.right.height)
+        node.bf = node.left.height - node.right.height
+        new_root.bf = new_root.left.height - new_root.right.height
+
+
+    def rotate_left(self, node):
+        new_root = node.right
+        node.right = new_root.left
+        new_root.left.parent = node
+        new_root.parent = node.parent
+        if not node.parent.is_real:
+            self.root = new_root
+        elif node == node.parent.left:
+            node.parent.left = new_root
+        else:
+            node.parent.right = new_root
+        new_root.left = node
+        node.parent = new_root
+
+        # Update heights and balance factors
+        node.height = 1 + max(node.left.height, node.right.height)
+        new_root.height = 1 + max(new_root.left.height, new_root.right.height)
+        node.bf = node.left.height - node.right.height
+        new_root.bf = new_root.left.height - new_root.right.height
