@@ -97,7 +97,7 @@ class AVLTree(object):
     """
 
     def insert(self, key, val):
-        search_time = 1
+        search_time = 2
         rotations = 0
         height_changes = 0
         new_node = None
