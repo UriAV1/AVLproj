@@ -11,7 +11,6 @@
 #bar do you see that
 #no
 
-
 class AVLNode(object):
     """Constructor, you are allowed to add more fields.
 
@@ -21,13 +20,14 @@ class AVLNode(object):
     @param value: data of your node
     """
 
-    def __init__(self, key, value):
+    def __init__(self, key, value, is_real = True):
         self.key = key
         self.value = value
         self.left = None
         self.right = None
         self.parent = None
         self.height = -1
+        self.is_real = is_real
 
     """returns whether self is not a virtual node 
 
@@ -53,7 +53,10 @@ class AVLTree(object):
     """
 
     def __init__(self, is_avl):
-        self.root = None
+        self.fakeNode = AVLNode(None, None, False)
+        self.root = self.fakeNode
+        self.size = 0
+        self.is_avl = is_avl
 
     """searches for a node in the dictionary corresponding to the key (starting at the root)
 
@@ -65,7 +68,19 @@ class AVLTree(object):
     """
 
     def search(self, key):
-        return None, -1
+        search_time = 1
+        if not self.root.is_real:
+            return None, 1
+        node = self.root
+        while node.is_real:
+            if node.key == key:
+                return node, search_time
+            if key < node.key:
+                node = node.left
+            else:
+                node = node.right
+            search_time += 1
+        return None, search_time+1
 
     """inserts a new node into the dictionary with corresponding key and value (starting at the root)
 
