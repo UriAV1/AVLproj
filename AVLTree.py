@@ -26,7 +26,7 @@ class AVLNode(object):
         self.left = None
         self.right = None
         self.parent = None
-        self.height = 0
+        self.height = 0 if is_real else -1
         self.bf = 0
         self.is_real = is_real
 
@@ -105,6 +105,7 @@ class AVLTree(object):
             self.root = AVLNode(key, val)
             self.root.left = self.fakeNode
             self.root.right = self.fakeNode
+            self.root.parent = self.fakeNode
             self.Size += 1
             return self.root, search_time, rotations, height_changes
 
@@ -139,23 +140,29 @@ class AVLTree(object):
             node.height = 1 + max(node.left.height, node.right.height)
             old_bf = node.bf
             node.bf = node.left.height - node.right.height
-            if node.bf == old_bf:
-                break
-            if self.is_avl and abs(node.bf) > 1:
-                rotations += 1
+            # if node.bf == old_bf:
+            #     break
+            if self.is_avl and abs(node.bf) < 2:
+                if node.height != old_height:
+                    height_changes += 1
+                else:
+                    break
+            else:
                 if node.bf == 2:
                     if node.left.bf == -1:
                         self.rotate_left(node.left)
                         rotations += 1
                     self.rotate_right(node)
+                    rotations += 1
                 else:
                     if node.right.bf == 1:
                         self.rotate_right(node.right)
                         rotations += 1
                     self.rotate_left(node)
-            else:
-                if node.height != old_height:
-                    height_changes += 1
+                    rotations += 1
+
+
+
 
 
         return new_node, search_time, rotations, height_changes
