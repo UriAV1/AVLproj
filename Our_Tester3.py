@@ -21,7 +21,7 @@ def first_expiriment(i):
         time_in_actions += actions
         height_changes += high
         sum_of_actions = time_in_actions + height_changes + rotations
-        height = tree.get_height()
+    height = tree.get_height()
 
 
     return rotations, sum_of_actions, height_changes,height, (time.time() - start) * 1000
