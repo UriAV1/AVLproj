@@ -186,18 +186,21 @@ class AVLTree(object):
         if not node.left.is_real and not node.right.is_real:
             if node == self.root:
                 self.root = self.fakeNode
+                self.Size -= 1
+                return
             elif node == node.parent.left:
                 node.parent.left = self.fakeNode
             else:
                 node.parent.right = self.fakeNode
             self.Size -= 1
-            return
 
         elif not node.left.is_real or not node.right.is_real:
             child = node.left if node.left.is_real else node.right
             if node == self.root:
                 self.root = child
                 child.parent = self.fakeNode
+                self.Size -= 1
+                return
             elif node == node.parent.left:
                 node.parent.left = child
                 child.parent = node.parent
@@ -205,7 +208,6 @@ class AVLTree(object):
                 node.parent.right = child
                 child.parent = node.parent
             self.Size -= 1
-            return
         else:
             successor = node.right
             while successor.left.is_real:
