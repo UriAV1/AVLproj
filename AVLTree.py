@@ -183,10 +183,11 @@ class AVLTree(object):
         if not node.is_real:
             return
 
-        if not node.left.is_real and not node.right.is_real:
+        if not node.left.is_real and not node.right.is_real: #leaf
             if node == self.root:
                 self.root = self.fakeNode
                 self.Size -= 1
+                node.parent = None
                 return
             elif node == node.parent.left:
                 node.parent.left = self.fakeNode
@@ -220,7 +221,10 @@ class AVLTree(object):
 
 
         while node is not self.root:
+            if node.parent.left is None or node.parent.right is None:
+                pass
             node = node.parent
+
             node.height = 1 + max(node.left.height, node.right.height)
             old_bf = node.bf
             node.bf = node.left.height - node.right.height
